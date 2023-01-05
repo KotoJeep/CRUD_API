@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/KotoJeep/CRUD_API#readme",
   "devDependencies": {
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
     "eslint": "^8.31.0",

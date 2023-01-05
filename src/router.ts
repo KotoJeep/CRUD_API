@@ -5,10 +5,12 @@ import { MESSAGE } from './dictionary';
 export const Router = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
 	const urlArgs = parseUrl(req.url);
 	const [api, users, userId, ...args] = urlArgs;
+	console.log(urlArgs);
 	if (api === 'api' && users === 'users') {
 		switch (req.method) {
 			case 'GET':
 				userId ? res.end(`GET 1 user with id: ${userId}`) : res.end(`GET all users`);
+				// res.end(urlArgs);
 				res.statusCode = 200;
 				break;
 			case 'POST':
