@@ -1,19 +1,22 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { CollectionUsers } from '../users/collectionUsers';
 import { getPostData } from '../helpers/getPostData';
-import { IUser } from '../users/user.interface';
+
 import { validateBodyData } from '../helpers/validateBodyData';
 import { validate } from 'uuid';
+import { ResponseFromServer } from '../helpers/serverResponse';
 
 const collectionUsers: CollectionUsers = new CollectionUsers();
 
 class UserController {
 	private readonly req: IncomingMessage;
-	private res: ServerResponse;
+	private readonly res: ServerResponse;
+	private response: ResponseFromServer;
 
 	constructor(req: IncomingMessage, res: ServerResponse) {
 		this.req = req;
 		this.res = res;
+		this.response = new ResponseFromServer(this.res);
 	}
 
 	async getAllUsers(): Promise<void> {
@@ -26,27 +29,23 @@ class UserController {
 		if (validate(userId)) {
 			const user = await collectionUsers.getOne(userId);
 			if (user) {
-				this.res.statusCode = 200;
-				this.res.end(JSON.stringify(user));
+				this.response.success(JSON.stringify(user));
 			} else {
-				this.res.statusCode = 404;
-				this.res.end(`This record doesn't exist!`);
+				this.response.notFound(`This record doesn't exist!`);
 			}
 		} else {
-			this.res.statusCode = 400;
-			this.res.end(`UserId isn't valid (not uuid)!`);
+			this.response.notValid(`UserId isn't valid (not uuid)!`);
 		}
 	}
 
 	async createUser(): Promise<void> {
 		const body = JSON.parse(await getPostData(this.req));
 		if (validateBodyData(body)) {
-			this.res.statusCode = 201;
+			this.res.writeHead(201, { 'Content-Type': 'application/json' });
 			const newUser = JSON.stringify(await collectionUsers.create(body));
 			this.res.end(newUser);
 		} else {
-			this.res.statusCode = 400;
-			this.res.end('body does not contain required fields');
+			this.response.notValid('Body does not contain required fields');
 		}
 	}
 
@@ -55,15 +54,12 @@ class UserController {
 			const body = JSON.parse(await getPostData(this.req));
 			const user = await collectionUsers.update(userId, body);
 			if (user) {
-				this.res.statusCode = 200;
-				this.res.end(JSON.stringify(user));
+				this.response.success(JSON.stringify(user));
 			} else {
-				this.res.statusCode = 404;
-				this.res.end(`This record doesn't exist!`);
+				this.response.notFound(`This record doesn't exist!`);
 			}
 		} else {
-			this.res.statusCode = 400;
-			this.res.end(`UserId isn't valid (not uuid)!`);
+			this.response.notValid(`UserId isn't valid (not uuid)!`);
 		}
 	}
 
@@ -72,14 +68,12 @@ class UserController {
 			const confirmDelete = collectionUsers.delete(userId);
 			if (confirmDelete) {
 				this.res.end('The record is found and deleted!');
-				this.res.statusCode = 204;
+				this.res.writeHead(204, { 'Content-Type': 'application/json' });
 			} else {
-				this.res.statusCode = 404;
-				this.res.end(`This record doesn't exist!`);
+				this.response.notFound(`This record doesn't exist!`);
 			}
 		} else {
-			this.res.statusCode = 400;
-			this.res.end(`UserId isn't valid (not uuid)!`);
+			this.response.notValid(`UserId isn't valid (not uuid)!`);
 		}
 	}
 }
