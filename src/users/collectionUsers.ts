@@ -25,15 +25,18 @@ export class CollectionUsers {
 
 	update(id: string, user: IUser): IUser | undefined {
 		const idxUserId = this.findIndexUser(id);
-		if (idxUserId) {
-			this.collectionUsers[idxUserId] = user;
+		console.log(idxUserId);
+		if (idxUserId !== -1) {
+			const updatedUser = { ...user };
+			this.collectionUsers[idxUserId] = updatedUser;
+			return updatedUser;
 		}
 		return undefined;
 	}
 
 	delete(id: string): boolean {
 		const idxUserId = this.findIndexUser(id);
-		if (idxUserId) {
+		if (idxUserId !== -1) {
 			this.collectionUsers = [
 				...this.collectionUsers.slice(0, idxUserId),
 				...this.collectionUsers.slice(idxUserId + 1),

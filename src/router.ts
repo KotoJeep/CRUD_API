@@ -1,39 +1,31 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { parseUrl } from './helpers/parseUrl';
 import { MESSAGE } from './dictionary';
+import UserController from './controllers/user.controller';
 
 export const Router = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
 	const urlArgs = parseUrl(req.url);
 	const [api, users, userId, ...args] = urlArgs;
-	console.log(urlArgs);
+	const controller = new UserController(req, res);
+
 	if (api === 'api' && users === 'users') {
 		switch (req.method) {
 			case 'GET':
-				userId ? res.end(`GET 1 user with id: ${userId}`) : res.end(`GET all users`);
-				// res.end(urlArgs);
-				res.statusCode = 200;
+				userId ? await controller.getOneUser(userId) : await controller.getAllUsers();
 				break;
 			case 'POST':
-				res.statusCode = 200;
-				res.end('POST');
+				await controller.createUser();
 				break;
 			case 'PUT':
-				if (userId) {
-					res.statusCode = 200;
-					console.log(userId);
-					res.end(`PUT 1 user with id: ${userId}`);
-				}
+				await controller.updateUser(userId);
 				break;
 			case 'DELETE':
-				if (userId) {
-					res.statusCode = 200;
-					res.end(`POST 1 user with id: ${userId}`);
-				}
+				await controller.deleteUser(userId);
 				break;
 		}
 	} else {
 		res.statusCode = 404;
 		res.statusMessage = MESSAGE.PAGE404;
-		res.end();
+		res.end(`This page doesn't exist!`);
 	}
 };
