@@ -7,18 +7,18 @@ export class ResponseFromServer {
 		this.res = res;
 	}
 
-	success(response: string): void {
+	success(responseMessage: string): void {
 		this.res.writeHead(200, { 'Content-Type': 'application/json' });
-		this.res.end(response);
+		this.res.end(responseMessage);
 	}
 
-	notFound(response: string): void {
+	notFound(responseMessage: string): void {
 		this.res.writeHead(404, { 'Content-Type': 'application/json' });
-		this.res.end(response);
+		this.res.end(responseMessage);
 	}
 
-	notValid(response: string): void {
+	notValid(responseMessage: string): void {
 		this.res.writeHead(400, { 'Content-Type': 'application/json' });
-		this.res.end(response);
+		this.res.end(responseMessage);
 	}
 }
