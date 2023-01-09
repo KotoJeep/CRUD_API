@@ -33,13 +33,8 @@ export const Router = async (req: IncomingMessage, res: ServerResponse): Promise
 			res.statusMessage = MESSAGE.PAGE404;
 			res.end(`This page doesn't exist!`);
 		}
-	} catch (err) {
-		if (err instanceof HttpError) {
-			res.writeHead(500, { 'Content-Type': 'application/json' });
-			res.end(`Error: ${err.message}`);
-		} else {
-			res.statusCode = 500;
-			res.end();
-		}
+	} catch (err: HttpError | any) {
+		res.writeHead(500);
+		res.end(`Error: ${err.message}`);
 	}
 };
