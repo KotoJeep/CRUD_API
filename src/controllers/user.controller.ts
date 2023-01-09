@@ -22,6 +22,7 @@ class UserController {
 	async getAllUsers(): Promise<void> {
 		this.res.statusCode = 200;
 		const users = JSON.stringify(collectionUsers.getAll());
+		// const users = collectionUsers.getAll();
 		this.res.end(users);
 	}
 
